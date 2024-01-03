@@ -1,0 +1,2 @@
+utest: utest.cpp ../common.cpp ../pack.cpp ../filter.cpp ../compress.cpp ../encryptor.cpp ../headFiles/common.h ../headFiles/pack.h ../headFiles/filter.h ../headFiles/compress.h ../headFiles/encryptor.h
+	g++ -o utest utest.cpp ../common.cpp ../pack.cpp ../filter.cpp ../compress.cpp ../encryptor.cpp -lssl -lcrypto

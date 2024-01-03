@@ -1,0 +1,590 @@
+## Chapter3
+
+### 1.标准库类型string
+
+头文件:#include\<string\>,在命名空间std中
+表示可变长的字符序列
+
+不用等号:直接初始化;用等号:拷贝初始化(第五条s5)
+
+```c++
+string s1;
+string s2(s1);
+string s3("value");
+stirng s4(n,'c');
+string s5 = s1/"value"/string(n,'c');
+```
+
+**string操作**
+
+读写:`<<,>>`
+读取一整行,存入字符串:`getline(cin,s);`
+
+empty()
+size() (返回的size_type是无符号数,所以要防止返回值与有符号数在表达式中混用)
+
+比较string:
+相同/不同: ==/!=
+比较>,>=,<,<=,规则:
+①若长度不同且较短字符串与较长字符串中对应位置相同,则短字符串<长字符串
+②在某些位置字符不一致,则按照第一队相异字符字典序比较
+
+相加得到新string对象:+
+将右侧string内容追加到左边string:+=
+
+字面值和string对象相加:
+
+C++中的字符串字面值并不是标准库中的string对象
+必须保证每个加法运算符两侧至少有一个string对象(不能把2个字面值直接相加)
+
+但当有多个加符号时:
+
+```c++
+string s6 = s1 + "," + "str"; 
+//正确,等价于string tmp = s1 + ","; string s6 = tmp + "str";
+string s7 = "," + "str" + s1 ; 
+//错误,字面值直接相加
+```
+
+**处理string对象中的字符**
+
+范围for(range for)语句:`char c : str;`
+用范围for改变字符串中字符,需要引用:`char &c : str;`
+
+下标访问,修改[]
+
+**返回C风格字符串**(以'\0'结束)
+
+`const char *str = str.c_str();`
+
+### 2.标准库类型vector
+
+是容器(container,容纳其他对象)
+#include \<vector>
+
+vector是模板而非类型,编译器根据模板创建类或函数的过程称为实例化
+用模板名字后面的尖括号指定模板实例化成什么样的类
+
+**定义和初始化**
+
+```c++
+vector<T> v1;
+vector<T> v2(v1); //拷贝
+vector<T> v2 = v1; //拷贝
+vector<T> v3(n,val); //包含n个重复元素,每个值都为val
+vector<T> v4(n); //值初始化,只提供元素数量,略去初始值,内置类型默认=0,其他则执行默认初始化
+vector<T> v5{a,b,c,..}; //列表初始化
+vector<T> v5={a,b,c,...}; //列表初始化
+//vector<T> v5{n};为列表初始值,vector<T> v4(n);才是值初始化(要是圆括号,花括号是列表初始化)
+//若列表初始化,花括号中提供的值类型不符,则会尝试默认初始化
+vector<string> v7{10}; //v7有10个默认初始化的元素
+vector<string> v8{10,"a"};//v8有10个"a"
+//允许使用数组初始化vector对象
+vector<int> v9(begin(arr),end(arr));//传入头指针和尾后指针(用于初始化vector的可能只是数组的一部分)
+```
+
+**vector操作**
+
+push_back
+vector对象能高效增长
+
+比较==,!=(元素数量相同,对应元素相同)
+<,<=,>,>=字典序比较
+只有元素可以比较时才能比较两个vector
+
+size(),empty(),[],范围for
+不能用下标添加元素,只能对已存在的元素执行下标操作
+
+**迭代器**
+
+iterator,所有标准库容器和string都可以使用迭代器访问元素
+
+有迭代器的类型成员中,begin(),end()分别返回第一个元素的迭代器和指向尾元素下一个位置的迭代器
+
+迭代器运算符
+比较相等:==, !=
+移动:++,--
+\*iter:返回迭代器iter所指元素的引用,可以通过迭代器访问它所指元素
+iter->mem,等价于(\*iter).mem(括号不能少)
+
+迭代器类型
+`<vector>int::iterator`
+`string::iterator`
+
+只能读,不能写:
+`<vector>int::const_iterator`
+`string::const_iterator`
+
+begin()和end()对于常量的容器(如`const vector<int> cv;`)返回const_iterator;其它的返回iterator
+如需要一定返回const_iterator,c++11新函数cbegin()和cend()
+
+不能在范围for循环中向vector对象添加元素
+任何一种改变vector容量的操作,如push_back(),会使迭代器失效
+只要只用了迭代器的循环体,就不要向容器添加元素
+
+### 3.数组
+
+**声明与初始化**
+
+大小(方括号内)需要类型是常量表达式constexpr
+可以列表初始化`int a[5] = {1,2,3};`剩下两个元素默认0
+列表初始化,大小可以空着
+
+字符数组用字符串初始化,会自动在尾部添加'\0'
+`char a[] = "abc"`,结尾自动加'\0'
+`char a[3] = "abc"`错误,没有位置放'\0'
+
+不允许赋值,拷贝
+`int a[] = a1; a2=a;`都错误
+
+含有指针和引用的数组声明
+
+```c++
+int *ptrs[10];//含有10个int指针的数组
+int &refs[10] = a;//不存在引用的数组
+int (*parr)[10] = &arr;//parr是指向大小为10int数组的指针
+int (&arrref)[10] = arr;//arrref是一个引用,引用对象是大小为10int数组的指针
+int *(&arrref)[10] = arr;//arrref是一个引用,引用对象是大小为10的数组,数组元素类型为int*(int指针)
+```
+
+后两个:从内向外理解
+如第三条:(*parr)说明parr是一个指针,然后看外边,知道它是一个指向大小为10int数组的指针
+
+**操作**
+
+数组也支持范围for循环
+
+**指针与数组**
+
+在使用数组时,编译器会把它转成指针
+数组名字会被自动转成指向数组首元素的指针
+指针也是迭代器
+
+获取数组arr尾后指针(最后一个元素下一个位置),用int *e = arr\[size];(size为数组a大小)
+C++11的新方法:用begin(arr)和end(arr)获取首元素指针和尾后指针
+
+用auto推断数组名,会得到指针类型而非数组
+但用decltype,返回的是数组类型
+
+下标运算等同于指针加减
+如`int i = p[-2]`等同于`int i = *(p-2);`
+与vector和string不同,内置的下标索引值不是无符号类型,所以可以处理负值
+
+**多维数组**
+
+以二维为例,在使用范围for时,即使不改变元素,外层for也要写成引用,否则无法通过编译
+因为如果不写成引用,内层for中的row会被自动转成指针,从而导致内层for不合法
+
+```c++
+for(auto &row:ia){
+    for(auto col:row){
+        ...
+    }
+}
+```
+
+## Chapter9
+
+### 1.顺序容器概述
+
+(Sequential container)
+
+顺序不依赖元素的值,而是于加入容器的顺序相对应
+
+顺序容器在以下方面性能有所不同:
+①向容器添加或从容器中删除元素的代价
+②非顺序访问容器中元素的代价
+
+| 类型         | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| vector       | 可变大小数组,支持快速随机访问,在尾部之外的位置插入或删除元素可能很慢 |
+| deque        | 双端队列,支持快速随机访问,在头尾位置插入/删除很快            |
+| list         | 双向链表,只支持双向顺序访问,在list中任何位置进行插入/删除操作都很快 |
+| forward list | 单向链表,只支持单向顺序访问,在链表任何位置进行插入/删除操作都很快 |
+| array        | 固定大小数组,支持快速随机访问,不能添加或删除元素             |
+| string       | 与vector相似的容器,但专门用于保存字符,随机访问快,在尾部\插入/删除快 |
+
+除array外都提供高效灵活的内存管理,可加入/删除
+array是C++新标准添加的更安全方便的数组类型
+list/forward_list,只支持顺序访问,而且相比于其他类型,额外内存开销大(因此不适合很小的元素)
+forward_list性能类似手写的单向链表,没有size操作,求大小开销较大
+deque,于vector/string类似,可快速随机访问且在中间加/删元素代价高,但在两端快
+
+新标准库的容器比旧版本快很多
+
+容器类型操作的层次:
+①所有容器类型都有
+②仅针对顺序容器/关联容器/无序容器
+③只适用于特定容器
+
+容器均定义为模板类
+若元素类型为没有默认构造函数的类,则可以定义这样的容器,但初始化时必须提供元素的初始化器
+
+**迭代器:**
+
+所有迭代器都有的公共接口
+`*,->,++,--(forward_list除外),==,!=`
+
+迭代器运算(仅适用于vector,string,deque,array,不适用于list及其他类型)
+`+n,-n,+=n,-=n,iter1-iter2,<,<=,>,>= `
+
+迭代器范围:左闭右开
+
+反向迭代器++会得到上一个元素
+
+**容器操作如下:**
+
+**类型别名**
+iterator,const_iterator,size_type(无符号),difference_type(两个迭代器间距离,带符号整数),reference(元素左值类型),const_reference(元素const左值类型)
+使用: 类型::xxx,如`vector<int>::difference_type`
+
+**构造函数**
+C c; C c1(c2); C c(b,e);(b和e是起始迭代器) C c{a,b,c};(列表初始化)
+
+注意:当将一个容器初始化为另一个已有容器的拷贝时,两个容器的容器类型和元素类型要相同
+例外:const char* 元素类型和string元素类型可转换
+拷贝可用被拷贝容器的迭代器作为拷贝范围的起始`deque aList(au,begin(),it);`
+
+只有顺序容器(不包括array,因array大小固定)的构造函数才接受大小参数:
+C seq(n); C seq(n,t);
+另外:因大小已固定,array类型定义时会对所有元素默认初始化(要求类类型元素有默认构造函数)
+
+**赋值,swap**
+c1 = c2
+c1 = {a,b,c}
+a.swap(b); swap(a,b); 交换a和b元素
+(内置数组类型不支持直接拷贝/赋值,但array类型可以(但二者大小要相同))
+(不同于其他,array进行swap操作会真正交换二者元素值,速度与元素数目相关,但指针,引用和迭代器绑定元素不变)
+
+以下仅顺序容器,不适用于关联容器和array: assign:替换容器中元素
+seq.assign(b,e)
+seq.assign(il) (il为初始化列表)
+seq.assign(n,t)
+注意:赋值会导致左边容器内部迭代器,引用和指针失效,但swap操作不会
+
+**大小**
+c.size()
+c.max_size()
+c.empty()
+
+**增删**(不适用于array)
+c.insert(args) args中元素拷贝进c
+c.emplace(inits) 使用inits构造c中的一个元素(原地构造,不产生临时变量)
+c.erase(args) 删除args指定的元素
+c.clear() 清空c,返回void
+
+**关系运算符**
+==,!=
+<,<=,>,>= 无序关联容器不支持
+比较需要类型和元素类型相同,规则类似string比较
+
+**获取迭代器**
+c.begin()/.end()/.cbegin()/cend()
+
+**反向容器拥有的额外成员**(不支持forward_list)
+reverse_iterator
+const_reverse_iterator
+c.rbegin()/.rend()/.crbegin()/crend()
+
+### 2.顺序容器操作
+
+**添加元素**(除array外)
+
+forward_list有自己版本的insert和emplace,不支持push_back和emplace_back
+vector,string不支持push_front,emplace_front
+向vector,string,deque添加元素会导致迭代器,引用和指针失效
+
+c.push_back(),c.emplace_back(),尾部添加
+c.push_front(),c.emplace_front(),头部添加
+c.insert(p,t),c.emplace(p,args),在迭代器p位置前插入值为t或args参数构造的元素,返回指向新添加元素迭代器
+c.insert(p,n,t)在迭代器p前插入n个值为t元素,返回指向添加的第一个的迭代器
+c.insert(p,b,e)把迭代器b和e范围内的元素插入p之前(范围内不能有c中元素),返回指向添加的第一个的迭代器
+c.insert(p,il)il是花括号包围的元素值列表
+
+使用insert,会创建临时变量
+使用emplace,传递构造函数需要的参数,在容器内存空间原地构造,不产生临时变量
+
+**访问元素**
+
+每个顺序容器都有front()
+除forward_list外都有back()
+使用下标:c.at(n)和c[n],只适用于string,vector和deque
+
+这些成员函数访问后返回的都是引用
+`auto &v=c.back(); v=1;`可以以此改变元素的值(如果用auto,要显式定义为引用)
+
+**删除元素**(除array外)
+
+forward_list有自己版本的erase
+forward_list不支持pop_back,vactor和string不支持pop_front
+
+c.pop_back(),c.pop_front(),返回void(c为空不警告,行为未定义)
+c.erase(p).删除迭代器p指向元素,返回指向被删元素之后元素的迭代器
+c.erase(b,e)删b和e范围内的,返回指向最后一个被删元素之后元素的迭代器
+c.clear(),清空,返回void
+
+删deque除首尾外其余元素让迭代器,指针,引用失效
+删vector,string元素,其位置后面的迭代器,指针,引用失效
+
+**forward_list特殊操作**
+
+返回链表首元素之前的不存在元素的迭代器
+lst.before_begin(),lst.cbefore_begin()(返回const_iterator)
+
+在迭代器p后面插入/删除(p为尾后迭代器,则未定义)
+list.insert_after(p,t)
+list.insert_after(p,n,t)
+list.insert_after(p,b,e)
+list.insert_after(p,il)
+lst.emplace_after(p,args)
+lst.erase_after(p)
+lst.erase_after(b,e)
+
+**改变容器大小**(除array外)
+
+c.resize(n);改大小为n,不足值初始化,多余的删除
+c.resize(n,m)不足补值为m的元素
+
+vector,string,deque进行resize可能使迭代器失效
+缩小容器则指向被删除元素的迭代器,引用,指针失效
+
+不要缓存end()返回的迭代器,应该重新调用end()(原来的可能失效)
+
+### 3.vector空间
+
+不会每次添加都进行内存分配和释放
+为了避免这种代价,标准库实现者采用了可以减少容器空间重新分配次数的策略
+不得不获取新的内存空间时,vector和string实现通常分配比新空间需求更大的内存空间
+容器预留这些空间作为备用,可用来保存更多的新元素
+
+c.shrink_to_fit()将capacity()减少为size()相同大小
+capacity(): 在不重新分配内存空间的前提下,可以保存多少元素
+c.reserve(n),分配至少容纳n个元素的内存空间(若n小于当前数量,则什么也不做)
+(resize只改变元素数量,不改变内存空间,不能用resize改变内存空间)
+
+第一个只适用于vector,string和deque
+后两个只用于vector和string
+
+### 4.额外的string操作
+
+这些操作大部分或是提供string和C风格字符数组的相互转换,或是增加允许用下标代替迭代器的版本
+
+构造string其他方法
+string s(cp,n); string s(s2,pos2); string s(s2,pos2,len2);
+(cp使字符数组,s2是另一个string)
+
+substr操作`substr(pos,len)`
+
+string除了顺序容器的assign,insert,erase外,还有接受下标的insert,erase(见P323)
+
+string搜索操作(见325)
+s.find() 第一次出现
+s.rfind() 最后一次出现
+s.find_first_of(args)
+s.find_last_of(args)
+s.find_first_not_of(args)
+s.find_last_not_of(args)
+可以传递一个可选的开始位置
+
+s.rfind() 从右向左搜索
+
+s.compare函数
+比较是s和一个string或一个字符数组,返回0,整数或负数
+参数:
+s2(另一个string)
+pos1,n1,s2
+pos1,n1,s2,pos2,n2
+cp(指向字符数组开始位置的指针)
+pos1,n1,cp
+pos1,n1,cp,n2
+
+数值转换
+
+to_string(val)
+stoi(s,p,b),stol,stoul,stoll,stoull,stof,stod,stold
+
+### 5.容器适配器
+
+标准库的三个容器适配器:stack,queue和priority_queue
+适配器是种机制,能使某种事物的行为看起来像另外一种事物一样
+
+如,stack适配器接受一个除array和forward_lisr外的顺序容器,并使其操作类似stack;
+queue只接受list和deque(因为要首尾操作)
+priority_queue除首尾外还要求随机访问,所以可以基于deque或vector,但不能是list
+
+适配器的构造函数:
+①默认构造函数,空对象
+②接受一个容器来初始化
+
+适配器在定义时可以把一个容器类型作为尖括号中第二个参数,来重载默认容器类型
+如基于vector实现的stack:`stack<string,vector<string>> st;`
+
+stack支持pop(),push(),emplace()和top()
+queue支持pop(),push(),front(),back()(只用于queue),top()(只用于priority_queue最高优先级元素但不删除),emplace()
+
+priority_queue默认使用<判断优先级,可以被重载
+
+## Chapter11
+
+关联容器(associative container)支持高效的关键字查找和访问
+
+**set**
+每个元素只包含一个关键字
+
+| 集合               | 底层实现 | 是否有序 | 数值是否可以重复 | 能否更改数值 | 查询效率 | 增删效率 |
+| ------------------ | -------- | -------- | ---------------- | ------------ | -------- | -------- |
+| std::set           | 红黑树   | 有序     | 否               | 否           | O(log n) | O(logn)  |
+| std::multiset      | 红黑树   | 有序     | 是               | 否           | O(logn)  | O(logn)  |
+| std::unordered_set | 哈希表   | 无序     | 否               | 否           | O(1)     | O(1)     |
+
+set列表初始化:`set<string> s = {"a","b","c"};`
+
+s.find(xxx): 如果找到,返回迭代器;否则返回尾后迭代器
+
+**map**
+key-value对
+
+| 映射               | 底层实现 | 是否有序 | 数值是否可以重复 | 能否更改数值 | 查询效率 | 增删效率 |
+| ------------------ | -------- | -------- | ---------------- | ------------ | -------- | -------- |
+| std::map           | 红黑树   | key有序  | key不可重复      | key不可修改  | O(logn)  | O(logn)  |
+| std::multimap      | 红黑树   | key有序  | key可重复        | key不可修改  | O(log n) | O(logn)  |
+| std::unordered_map | 哈希表   | key无序  | key不可重复      | key不可修改  | O(1)     | O(1)     |
+
+定义map: map<key类型,value类型> m;
+
+map列表初始化:`map<string,int> m = {{"a",1},{"b",2},{"c",3}}`;
+
+按key访问value: m[key]
+
+当从map中提取元素时(如`const auto &w:m`)
+元素(w)时pair类型对象
+pair是保存两个名为first,second的数据成员的模板类型
+
+**有序容器关键字类型**
+
+必须定义一个严格弱序(小于等于)
+
+使用关键字类型自己的比较函数:
+定义时除了元素类型外还需提供比较操作类型(函数指针类型)
+
+```c++
+bool mycmp(const Sales_data &lhs, const Sales_data &rhs){
+    return lhs.isbn()<rhs.isbn();
+}
+multiset<Sales_data,decltype(mycmp)*> myset(mycmp);
+//函数名mycmp自动转化为指针
+```
+
+**pair类型**
+
+在头文件utility
+
+pair默认构造函数对两个数据成员值初始化
+也可以为每个成员提供初始化器
+`pair<string,string> myp{"a","b};`或`myp(a,b)`
+
+pair成员public
+访问:myp.first,myp.second
+
+==,!=:要求两个成员均分别相等
+比较两个pair:第一元素具有较高优先级,所以如果两个pair第一元素不相等,其比较结果就成为整个比较行为的结果;如第一元素相等,才继续比较第二元素,并把比较结果当作整体比较结果
+
+新标准下,函数返回pair,可以对返回值列表初始化
+`return {"a",1};`
+或者显式构造,或使用make_pair
+`return pair<string,int>("a",1);`
+`return make_pair("a",1);`
+
+**关联容器操作**
+
+set的key_type和value_type是一样的
+map中key_type和mapped_type分别是key值和key映射到的元素类型
+map中的value_type是pair类型
+
+关联容器迭代器指向容器value_type类型(map是pair)
+
+set的迭代器是const的
+set类型的iterator和const_iterator都只允许只读访问set中的元素
+因为set的关键字是const的,不可更改
+
+map中pair元素的第一个成员(关键字)也是const的
+
+**关联容器添加操作**
+添加value_type类型(注意map添加的是pair)
+
+c.insert(v)
+c.emplace(args)
+函数返回一个pair,包含一个迭代器.指向具有指定关键字的元素,以及一个是否插入成功的bool
+失败:关键字已经存在
+注:若是mulitset/multimap,则只返回迭代器
+
+c.insert(b,e)
+c.insert(il)
+这两者返回void
+
+c.insert(p,v)
+c.emplace(p,args)
+从迭代器p开始搜索应该存储的位置,返回指向对应元素的迭代器
+
+**删除操作**
+
+erase()
+传递一个迭代器/两个迭代器(范围)/key_type关键字,删除匹配关键字的元素
+
+**map下标操作**
+
+map和unordered_map提供下标运算符[]和at函数
+(注意multimap没有下标操作)
+
+[]接受key_type元素
+若key不存在,则会直接插入map
+
+map下标操作返回值是左值引用,可以通过其直接修改元素
+
+**访问元素**
+
+find(k) 查找key==k的元素,没找到则返回尾后迭代器
+count(k) 查找key==k的元素数量
+
+map和unordered的下标操作
+若不想在没找到时插入,使用find
+
+mulitset和multimap相同关键字的元素会相邻存储
+
+有序容器还有以下操作:
+c.lower_bound(k) 返回迭代器指向第一个关键字不小于(>=)k的元素
+c.upper_bound(k) 返回迭代器指向第一个关键字大于(>)k的元素
+c.equal_bound(k) 返回一个pair,成员为两个迭代器,表示key==k的范围;若不存在,则均等于尾后迭代器c.end()
+
+**无序容器**
+
+无序容器(unordered associative container)
+不使用比较运算符组织元素,而是用哈希函数和==运算符
+
+管理桶:
+
+> 无序容器在存储上组织为一组桶,每个桶保存零个或多个元素,无序容器使用一个哈希函数将元素映射到桶.为了访问一个元素,容器首先计算元素的哈希值,它指出应该搜索哪个桶,容器将具有一个特定哈希值的所有元素都保存在相同的桶中,如果容器允许重复关键字,所有具有相同关键字的元素也都会在同一个桶中,因此,无序容器的性能依赖于哈希函数的质量和桶的数量和大小.
+>
+> 对于相同的参数,哈希函数必须总是产生相同的结果,理想情况下,哈希函数还能将每个特定的值映射到唯一的桶.但是,将不同关键字的元素映射到相同的桶也是允许的,当一个桶保存多个元素时,需要顺序搜索这些元素来查找我们想要的那个,计算一个元素的哈希值和在桶中搜索通常都是很快的操作,但是,如果一个桶中保存了很多元素,那么查找一个特定元素就需要大量比较操作
+>
+> 无序容器提供了一组管理桶的函数,这些成员函数允许我们查询容器的状态以及在必要时强制容器进行重组
+> <img src=".\images2\1.jpg" alt="1" style="zoom:67%;" />
+
+不能直接定义关键字类型(key_type)为自定义类类型的无序容器
+需要自己提供hash模板版本呢(Chapter16)
+或者提供函数代替==和哈希值计算函数
+
+```c++
+size_t hasher (const Sales_data &sd){
+    return hash<string>() (sd.isbn());//标准库hash类型对象计算哈希值
+}
+
+bool eqOp (const Sales_data &lhs，const Sales_data &rhs){
+	return lhs.isbn() == rhs.isbn();
+}
+//用这两个函数定义unordered_multiset
+using SD_multiset = unordered_multiset<Sales_data,decltype(hasher)*,decltype(eqOp)*>;
+//参数是桶大小、哈希函数指针和相等性判断运算符指针
+SD multiset bookstore (42，hasher, eqOp) :
+//如果类已经定义了==运算符,则可以只重载哈希函数
+```
