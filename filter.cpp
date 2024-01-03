@@ -1,5 +1,6 @@
 #include "./headFiles/filter.h"
 
+// 判断自定义备份文件大小条件
 bool filter::sizejudge(off_t byte_size, string match_size){
     if(match_size=="0") return true;
     long long msize = stoll(match_size.substr(1,match_size.size()-1));
@@ -11,6 +12,7 @@ bool filter::sizejudge(off_t byte_size, string match_size){
     }
 }
 
+// 判断自定义备份文件类型条件
 bool filter::typejudge(string type, string types){
     if(types=="0") return true;
     // 把自定义需要备份的类型名保存进unordered_set
@@ -24,6 +26,7 @@ bool filter::typejudge(string type, string types){
     return matchType.find(type)!=matchType.end();
 }
 
+// 判断自定义备份修改时间条件
 bool filter::timejudge(time_t time, string match_time){
     if(match_time=="0") return true;
     struct tm tm_match;
@@ -37,11 +40,13 @@ bool filter::timejudge(time_t time, string match_time){
     }
 }
 
+// 判断自定义备份文件名条件
 bool filter::namejudge(string name, string match_name){
     if(match_name=="0") return true;
     return name == match_name;
 }
 
+// 判断自定义备份所属路径条件
 bool filter::pathjudge(string path, string match_path){
     if(match_path=="0") return true;
     char buf[2048];
@@ -56,6 +61,7 @@ bool filter::pathjudge(string path, string match_path){
     return true;
 }
 
+// 判断文件是否符合filter_arg给定条件
 bool filter::filejudge(vector<string> filter_arg, string type, off_t byte_size, string name, time_t time, string path){
     bool typematch,sizematch,namematch,timematch,pathmatch,match;
     typematch = typejudge(type,filter_arg[0]);
@@ -67,6 +73,7 @@ bool filter::filejudge(vector<string> filter_arg, string type, off_t byte_size, 
     return match;
 }
 
+// 判断文件是否符合filter_arg给定条件
 bool filter::filejudge(vector<string> filter_arg, string str_name, string file_path, struct stat fileinfo){
     string type;
     if(S_ISLNK(fileinfo.st_mode)){
@@ -85,6 +92,7 @@ bool filter::filejudge(vector<string> filter_arg, string str_name, string file_p
     return filejudge(filter_arg, type, byte_size, str_name, m_time, file_path);
 }
 
+// 用于检查用户输入的自定义备份条件格式是否正确
 bool filter::checkfilter(char** argv) {
     if (argv[4][0] != '0') {    
         string s{argv[4]};
@@ -108,6 +116,7 @@ bool filter::checkfilter(char** argv) {
     return true;
 }
 
+// 检查输入的日期时间格式是否正确
 bool filter::checkdatetime(string str) {
     // 定义正则表达式，匹配形如“2021-12-01 12:00:00”的格式
     str.erase(str.begin());
