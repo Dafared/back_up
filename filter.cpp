@@ -157,7 +157,7 @@ bool filter::checkdatetime(string str) {
     return true;
 }
 
-// 用于测试自定义条件过滤器的函数
+// 用于单元测试自定义条件过滤器的函数
 void filter::testfilter(string test_file, vector<string> filter_arg) {
     bool result = false;
     struct stat fileinfo;

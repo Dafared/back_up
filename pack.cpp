@@ -2,6 +2,7 @@
 
 using namespace std;
 
+// 获取文件夹大小
 long long int pack_class::sizeofDir(string dir_path){
     DIR *dir;
 	struct dirent *entry;
@@ -34,6 +35,7 @@ long long int pack_class::sizeofDir(string dir_path){
     return totalDirSize;
 }
 
+// 生成head block
 headblock* pack_class::getHeadBlock(string file_path, string relative){
     struct stat fileinfo;
     lstat(file_path.c_str(), &fileinfo);
@@ -148,6 +150,8 @@ bool pack_class::packToFile(string source_dirname, int target_file, vector<strin
     closedir(dir);
     return true;
 }
+
+// 解包函数
 bool pack_class::unpack(int source_file, string target_dirname){
     int fout;
 	char buffer[BLOCKSIZE];

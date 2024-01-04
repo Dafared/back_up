@@ -18,6 +18,7 @@
 
 using namespace std;
 
+// 检查用户输入的参数是否合法
 bool common::check_arg(string dir1, string dir2, int mode, string &msg) {
     if (mode < 0 || mode > 9) {
         msg = "invalid mode number";
@@ -90,6 +91,7 @@ bool common::check_arg(string dir1, string dir2, int mode, string &msg) {
     return true;
 }
 
+// 获取文件/文件夹路径最后的名称
 string common::get_folder_name(string dir) {
     string filename, rel = "";
     for (int i = dir.size()-1; i > -1; i--) {
@@ -102,11 +104,13 @@ string common::get_folder_name(string dir) {
     return rel;
 }
 
+// 修改文件末尾.后面的后缀
 string common::change_suffix(string dir, string new_suffix) {
     dir.erase(dir.begin() + dir.find_last_of(".") + 1, dir.end());
     return dir + new_suffix;
 }
 
+// 修改文件元数据
 void common::changeAttr(const char *src, const char *dst) {
     struct stat attr_of_src;
     lstat(src, &attr_of_src);
@@ -157,6 +161,7 @@ void common::copy_file(const char* source_file, const char* target_file) {
     fout.close();
 }
 
+// 复制软链接函数
 void common::copySln(const char *src_file, const char *dst_file) {
     //软链接所指向的文件路径
     char slink_path[1024];
@@ -202,6 +207,7 @@ void common::copySln(const char *src_file, const char *dst_file) {
     }
 }
 
+// 复制管道文件函数
 void common::copyPipe(const char *src_file, const char *dst_file) {
     struct stat attr_of_src;
     stat(src_file, &attr_of_src);

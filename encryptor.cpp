@@ -1,5 +1,6 @@
 #include"./headFiles/encryptor.h"
 
+// 加密函数
 bool encryptor::encrypt(string sourcefile, string targetfile, const unsigned char *key) {
     unsigned char buffer_in[AES_BLOCK_SIZE];
     unsigned char buffer_out[AES_BLOCK_SIZE];
@@ -59,6 +60,7 @@ bool encryptor::encrypt(string sourcefile, string targetfile, const unsigned cha
     return true;
 }
 
+// 解密函数
 bool encryptor::decrypt(string sourcefile, string targetfile, const unsigned char *key) {
     unsigned char buffer_in[AES_BLOCK_SIZE];
     unsigned char buffer_out[AES_BLOCK_SIZE];
@@ -78,6 +80,7 @@ bool encryptor::decrypt(string sourcefile, string targetfile, const unsigned cha
     int fin = open(sourcefile.c_str(), O_RDONLY);
     int fout = open(targetfile.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644);
 
+    // 解密除最后一个块外其他块
     for (int i = 0; i < (fileinfo.st_size / AES_BLOCK_SIZE) - 1; i++) {
         read(fin,buffer_in,AES_BLOCK_SIZE);
         AES_ecb_encrypt(buffer_in, buffer_out, &decrypt_key, AES_DECRYPT);

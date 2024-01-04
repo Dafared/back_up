@@ -16,6 +16,8 @@ using namespace std;
 
 class encryptor {
 public:
+    // 加密函数
     bool encrypt(string sourcefile, string targetfile, const unsigned char *key);
+    // 解密函数
     bool decrypt(string sourcefile, string targetfile, const unsigned char *key);
 };
