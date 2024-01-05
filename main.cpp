@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
      * source_dir(argv[1]):要备份的文件夹路径
      * target_dir(argv[2]):要储存该文件夹备份的地址
      * 还原:
-     * source_dir(argv[1]):要还原该文件夹备份的地址
+     * source_dir(argv[1]):要还原该文件夹的地址
      * target_dir(argv[2]):该文件夹备份版本/打包文件/加密文件/压缩文件的地址
     */
     const char* source_dir = argv[1];
