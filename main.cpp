@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
     // 要筛选多种类型,中间用'/'分隔,结尾也要有'/'(示例:link/txt/pdf/jpg/zip/)
     vector<string> filter_arg = {"0", "0", "0", "0", "0"};
     if (argc == 9) {
-        if (!fil.checkfilter(argv)) {
+        if (!fil.checkfilter(argv)) { // 检查输入自定义条件格式是否正确
             cout<<"filter arguments format error"<<endl;
             exit(1);
         }
